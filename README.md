@@ -1,115 +1,97 @@
-# Smart Library Management System
+# PCCCS495 – Term II Project
 
-**Term-II Individual Project | Spring 2026**
+## Project Title
 
----
-
-## Project Overview
-
-A small/medium-scale Java application demonstrating strong Object-Oriented Design principles through a fully functional library management system.
+Smart Library Management System
 
 ---
 
-## Package Structure
+## Problem Statement (max 150 words)
 
-```
-SmartLibrary/
-└── src/
-    ├── model/
-    │   ├── LibraryItem.java       (abstract base class)
-    │   ├── Book.java              (extends LibraryItem)
-    │   ├── Magazine.java          (extends LibraryItem)
-    │   ├── Member.java            (library member)
-    │   └── BorrowRecord.java      (tracks each borrow transaction)
-    ├── exception/
-    │   ├── BookNotFoundException.java
-    │   ├── AlreadyBorrowedException.java
-    │   └── MemberNotFoundException.java
-    ├── factory/
-    │   └── LibraryItemFactory.java  (Factory Pattern)
-    ├── strategy/
-    │   ├── FineStrategy.java        (interface - Strategy Pattern)
-    │   ├── RegularFineStrategy.java (Rs. 2.00/day)
-    │   └── PremiumFineStrategy.java (Rs. 1.00/day, max Rs. 30)
-    ├── service/
-    │   ├── LibraryService.java      (Singleton Pattern - core logic)
-    │   └── DataManager.java         (Java Serialization persistence)
-    └── ui/
-        └── Main.java                (Console menu - entry point)
-└── test/
-    └── service/
-        └── LibraryServiceTest.java  (JUnit tests)
-```
+Managing a library manually is time-consuming and error-prone. Librarians struggle to track which books are available, which are borrowed, who borrowed them, and when they are due. There is no easy way to search for a book, record fines for late returns, or keep member records organised. Duplicate borrowing of the same item, lost return records, and untracked overdue fines are common problems in manual systems. This project provides a well-structured, object-oriented Java application that handles book inventory, member management, borrowing and return operations, and automatic fine calculation in a clean and reliable way.
 
 ---
 
-## OOP Concepts Demonstrated
+## Target User
 
-| Concept | Where Used |
-|---|---|
-| Abstraction | `LibraryItem` abstract class with `getDetails()` |
-| Inheritance | `Book` and `Magazine` extend `LibraryItem` |
-| Polymorphism | `getDetails()` behaves differently per subclass |
-| Encapsulation | All fields are `private`, accessed via getters/setters |
-| Exception Handling | 3 custom exceptions thrown throughout service layer |
-| Collections | `HashMap` and `ArrayList` used throughout |
-| File Handling | Java Serialization via `ObjectOutputStream/InputStream` |
+- Librarians who need to manage book inventory and member records
+- Library members who borrow and return books
+- Administrators who oversee borrow history and fine management
 
 ---
 
-## Design Patterns Used
+## Core Features
 
-| Pattern | Class | Purpose |
-|---|---|---|
-| Singleton | `LibraryService` | Ensures one shared service instance |
-| Factory | `LibraryItemFactory` | Creates Book or Magazine from a type string |
-| Strategy | `FineStrategy` interface | Swappable fine calculation algorithm |
+- Add, remove, and search books and magazines by title, author, or ID
+- Register and manage library members
+- Issue (borrow) items to members with automatic due date tracking (14 days)
+- Return items and automatically calculate overdue fines via Strategy Pattern
+- View full borrowing history for any member
+- Switch fine strategy at runtime (Regular: Rs. 2.00/day | Premium: Rs. 1.00/day, max Rs. 30)
+- File-based persistence using Java Serialization — data saved to .ser files on exit and reloaded on startup
+- Custom exception handling for invalid operations (e.g. borrowing an already-borrowed book)
+
+---
+
+## OOP Concepts Used
+
+- **Abstraction:** `LibraryItem` is an abstract class with abstract method `getDetails()` — subclasses must provide their own implementation
+- **Inheritance:** `Book` and `Magazine` both extend `LibraryItem`, reusing common fields (itemId, title, author, isAvailable) via `super()`
+- **Polymorphism:** `getDetails()` is overridden in both `Book` and `Magazine` — same method name, different output at runtime
+- **Exception Handling:** Three custom checked exceptions (`BookNotFoundException`, `AlreadyBorrowedException`, `MemberNotFoundException`) extend `Exception` and are thrown throughout the service layer
+- **Collections / Threads:** `HashMap<String, LibraryItem>` and `HashMap<String, Member>` used in `LibraryService` for O(1) ID-based lookup; `ArrayList<BorrowRecord>` used in `Member` for borrow history
+
+---
+
+## Proposed Architecture Description
+
+The project follows a clean six-package layered architecture:
+
+- **model/** — Core entity classes: `LibraryItem` (abstract), `Book`, `Magazine`, `Member`, `BorrowRecord`. All implement `Serializable` for file persistence.
+- **exception/** — Custom checked exceptions: `BookNotFoundException`, `AlreadyBorrowedException`, `MemberNotFoundException`.
+- **factory/** — `LibraryItemFactory` implements the **Factory Pattern** — creates `Book` or `Magazine` objects from a type string, centralising object creation.
+- **strategy/** — `FineStrategy` interface implements the **Strategy Pattern** with two concrete classes: `RegularFineStrategy` (Rs. 2.00/day) and `PremiumFineStrategy` (Rs. 1.00/day, capped at Rs. 30). Swappable at runtime.
+- **service/** — `LibraryService` implements the **Singleton Pattern** — one shared instance manages all items, members, and borrow records using HashMaps. `DataManager` handles Java Serialization for save/load.
+- **ui/** — `Main.java` provides a 12-option console menu connecting all layers.
 
 ---
 
 ## How to Run
 
-1. Compile all `.java` files from the `src/` directory
-2. Run `ui.Main` as the entry point
-3. Follow the console menu (12 options)
-4. Data is saved to `library_items.ser` and `library_members.ser` on exit
-
+**Compile:**
 ```bash
-# Compile
-javac -d out src/**/*.java
+javac -d out src/model/*.java src/exception/*.java src/factory/*.java src/strategy/*.java src/service/*.java src/ui/*.java
+```
 
-# Run
+**Run:**
+```bash
 java -cp out ui.Main
 ```
 
----
-
-## How to Run Tests
-
-Add `junit-4.x.jar` to your classpath, then:
-
+**Run Tests (JUnit 4 required):**
 ```bash
-javac -cp junit.jar:src -d out test/**/*.java src/**/*.java
+javac -cp junit.jar:src -d out test/service/LibraryServiceTest.java src/**/*.java
 java  -cp junit.jar:out  org.junit.runner.JUnitCore service.LibraryServiceTest
 ```
 
----
-
-## Persistence
-
-Data is saved using **Java Object Serialization** to two binary files:
-- `library_items.ser` — all books and magazines
-- `library_members.ser` — all members and their borrow histories
-
-These files are loaded automatically on startup and saved on exit (option 12).
+> Data is automatically saved to `library_items.ser` and `library_members.ser` when you exit via option 12, and reloaded on the next startup.
 
 ---
 
-## Fine Calculation
+## Git Discipline Notes
 
-| Strategy | Rate | Cap |
-|---|---|---|
-| Regular | Rs. 2.00 per day | None |
-| Premium | Rs. 1.00 per day | Rs. 30.00 max |
+Minimum 10 meaningful commits required.
 
-Switch strategies at runtime via option 11 in the menu.
+| Day | Commit Message |
+|-----|---------------|
+| 1 | Initialize project structure with package folders and LibraryItem abstract class |
+| 2 | Add Book and Magazine classes extending LibraryItem with @Override getDetails() |
+| 3 | Add Member class with borrow history ArrayList and BorrowRecord with LocalDate |
+| 4 | Add custom exceptions BookNotFoundException, AlreadyBorrowedException, MemberNotFoundException |
+| 4 | Add LibraryItemFactory using Factory design pattern |
+| 5 | Add FineStrategy interface and RegularFineStrategy and PremiumFineStrategy implementations |
+| 6 | Add LibraryService with Singleton pattern and HashMap storage for items and members |
+| 7 | Add issueItem() and returnItem() with fine calculation using FineStrategy |
+| 8 | Add DataManager with Java Serialization for full library state persistence |
+| 9 | Add Main.java console menu with 12 options — full system integration |
+| 10 | Add JUnit test suite with 16 test cases covering all major functionality |
