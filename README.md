@@ -58,23 +58,13 @@ The project follows a clean six-package layered architecture:
 
 ## How to Run
 
-**Compile:**
-```bash
-javac -d out src/model/*.java src/exception/*.java src/factory/*.java src/strategy/*.java src/service/*.java src/ui/*.java
-```
-
-**Run:**
-```bash
-java -cp out ui.Main
-```
-
-**Run Tests (JUnit 4 required):**
-```bash
-javac -cp junit.jar:src -d out test/service/LibraryServiceTest.java src/**/*.java
-java  -cp junit.jar:out  org.junit.runner.JUnitCore service.LibraryServiceTest
-```
-
-> Data is automatically saved to `library_items.ser` and `library_members.ser` when you exit via option 12, and reloaded on the next startup.
+Go to Codespaces in GitHub.
+Create a new Codespace. 
+Select the Repository.
+Install Java extension.(One time only)
+Install Java Debugger.(Each time it is run)
+Go to the main file in the ui folder.
+Run the Main File.
 
 ---
 
@@ -82,16 +72,16 @@ java  -cp junit.jar:out  org.junit.runner.JUnitCore service.LibraryServiceTest
 
 Minimum 10 meaningful commits required.
 
-| Day | Commit Message |
+| Commit no. | Commit Message |
 |-----|---------------|
-| 1 | Initialize project structure with package folders and LibraryItem abstract class |
-| 2 | Add Book and Magazine classes extending LibraryItem with @Override getDetails() |
-| 3 | Add Member class with borrow history ArrayList and BorrowRecord with LocalDate |
-| 4 | Add custom exceptions BookNotFoundException, AlreadyBorrowedException, MemberNotFoundException |
-| 4 | Add LibraryItemFactory using Factory design pattern |
-| 5 | Add FineStrategy interface and RegularFineStrategy and PremiumFineStrategy implementations |
-| 6 | Add LibraryService with Singleton pattern and HashMap storage for items and members |
-| 7 | Add issueItem() and returnItem() with fine calculation using FineStrategy |
-| 8 | Add DataManager with Java Serialization for full library state persistence |
-| 9 | Add Main.java console menu with 12 options — full system integration |
-| 10 | Add JUnit test suite with 16 test cases covering all major functionality |
+| 1 | Initialize project structure with package folders |
+| 2 | Book class extending LibraryItem |
+| 3 | Magazine class extending LibraryItem |
+| 4 | Member Class and BorrowRecord |
+| 5 | Custom Exceptions |
+| 6 | LibraryItemFactory using Factory design pattern |
+| 7 | Adding Fine Strategies |
+| 8 | LibraryService with Singleton pattern and HashMap storage |
+| 9 | DataManager with Java Serialization |
+| 10 | Main file with console menu and all user options |
+| 11 | Testing code and Documentation |
